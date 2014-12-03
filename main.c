@@ -17,7 +17,10 @@ int main (int argc, const char * argv[])
 	    graphTestNumber = argv[1][0];
 	    graphTestNumber &= 0x0F;
 	}
-	if(argc == 3) useDFS = argv[2][0];
+	if(argc == 3){
+	    useDFS = argv[2][0];
+	    useDFS &= 0x0F;
+	}
 
 	/* set up the graph */
 	if(graphTestNumber == 1)
