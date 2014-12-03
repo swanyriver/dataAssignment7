@@ -214,6 +214,8 @@ int DFSRecursive(Graph* g, Vertex* source, Vertex* destination)
 	return DFSRecursiveHelper(g, source, destination);
 }
 
+int BDFS(Graph* g, Vertex* source, Vertex* destination, void (*add)(cirListDeque*, TYPE val));
+
 /* This function should return a boolean (encoded as an int) indicating
  * whether or not a path exists between the argument vertices.
  * param: g			Graph to perform the search in
@@ -223,42 +225,7 @@ int DFSRecursive(Graph* g, Vertex* source, Vertex* destination)
  */
 int DFS(Graph* g, Vertex* source, Vertex* destination)
 {
-    int i;
-    int reachable = 0;
-    cirListDeque *unvisited;
-    Vertex *visiting;
-
-    assert(g);
-    assert(source);
-    assert(destination);
-
-    /*undo visits*/
-    clearVisited(g);
-
-    unvisited = malloc(sizeof(cirListDeque));
-    assert(unvisited);
-    initCirListDeque(unvisited);
-
-    addFrontCirListDeque(unvisited,source);
-
-    while(!isEmptyCirListDeque(unvisited) && !reachable){
-        visiting = frontCirListDeque(unvisited);
-        assert(visiting);
-        removeFrontCirListDeque(unvisited);
-        if(!visiting->isVisited){
-            if(visiting == destination){
-                reachable = 1;
-            }
-            for(i=0; i<visiting->numNeighbors; ++i)
-                addFrontCirListDeque(unvisited,visiting->neighbors[i]);
-                /*change to back for BFS*/
-        }
-        visiting->isVisited = 1;
-        /*end of while loop*/
-    }
-
-
-	return reachable;
+    return BDFS(g,source,destination,addFrontCirListDeque);
 }
 
 /* This function should return a boolean (encoded as an int) indicating
@@ -270,8 +237,12 @@ int DFS(Graph* g, Vertex* source, Vertex* destination)
  */
 int BFS(Graph* g, Vertex* source, Vertex* destination)
 {
+    return BDFS(g,source,destination,addBackCirListDeque);
+}
+
+int BDFS(Graph* g, Vertex* source, Vertex* destination, void (*add)(cirListDeque*, TYPE val))
+{
     int i;
-    int reachable = 0;
     cirListDeque *unvisited;
     Vertex *visiting;
 
@@ -288,22 +259,24 @@ int BFS(Graph* g, Vertex* source, Vertex* destination)
 
     addFrontCirListDeque(unvisited,source);
 
-    while(!isEmptyCirListDeque(unvisited) && !reachable){
+    while( !isEmptyCirListDeque(unvisited) ){
         visiting = frontCirListDeque(unvisited);
         assert(visiting);
         removeFrontCirListDeque(unvisited);
         if(!visiting->isVisited){
             if(visiting == destination){
-                reachable = 1;
+                return 1;
             }
             for(i=0; i<visiting->numNeighbors; ++i)
-                addBackCirListDeque(unvisited,visiting->neighbors[i]);
-                /*change to back for BFS*/
+                add(unvisited,visiting->neighbors[i]);
+                /*Either add to front or add to back
+                 * this is the function call the differentiates
+                 * the two algorithms*/
         }
         visiting->isVisited = 1;
         /*end of while loop*/
     }
 
 
-    return reachable;
+    return 0;
 }
