@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "graph.h"
 
-int main () 
+int main (int argc, const char * argv[])
 {
 	/* change this number to generate different graphs */
 	int graphTestNumber = 3; /* permissible values are 1-5 */
@@ -11,6 +11,14 @@ int main ()
 	int i, j;
 	Graph g;
 	
+
+	if(argc >= 2)
+	{
+	    graphTestNumber = argv[1][0];
+	    graphTestNumber &= 0x0F;
+	}
+	if(argc == 3) useDFS = argv[2][0];
+
 	/* set up the graph */
 	if(graphTestNumber == 1)
 		createGraph1(&g);
