@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <limits.h>
+#include <assert.h>
 
 #include "cirListDeque.h"
 
@@ -222,8 +223,42 @@ int DFSRecursive(Graph* g, Vertex* source, Vertex* destination)
  */
 int DFS(Graph* g, Vertex* source, Vertex* destination)
 {
-	/* FIXME you will write this */
-	return 0;
+    int i;
+    int reachable = 0;
+    cirListDeque *unvisited;
+    Vertex *visiting;
+
+    assert(g);
+    assert(source);
+    assert(destination);
+
+    /*undo visits*/
+    clearVisited(g);
+
+    unvisited = malloc(sizeof(cirListDeque));
+    assert(unvisited);
+    initCirListDeque(unvisited);
+
+    addFrontCirListDeque(unvisited,source);
+
+    while(!isEmptyCirListDeque(unvisited) && !reachable){
+        visiting = frontCirListDeque(unvisited);
+        assert(visiting);
+        removeFrontCirListDeque(unvisited);
+        if(!visiting->isVisited){
+            if(visiting == destination){
+                reachable = 1;
+            }
+            for(i=0; i<visiting->numNeighbors; ++i)
+                addFrontCirListDeque(unvisited,visiting->neighbors[i]);
+                /*change to back for BFS*/
+        }
+        visiting->isVisited = 1;
+        /*end of while loop*/
+    }
+
+
+	return reachable;
 }
 
 /* This function should return a boolean (encoded as an int) indicating
